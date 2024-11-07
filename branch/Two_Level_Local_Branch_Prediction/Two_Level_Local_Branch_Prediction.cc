@@ -14,14 +14,14 @@ namespace
 
   //64k bytes 
 constexpr std::size_t BIMODAL_TABLE_SIZE = 16384;
-constexpr std::size_t COUNTER_BITS = 2;
-constexpr std::size_t HISTORIES_TABLE_DEPTH = 14;
+constexpr std::size_t COUNTER_BITS = 4;
+constexpr std::size_t HISTORY_LENGTH = 14;
 
 // std::bitset<HISTORIES_TABLE_DEPTH> History {"0000000000000"}; 
 
 
 std::map<O3_CPU*, std::array<champsim::msl::fwcounter<COUNTER_BITS>, BIMODAL_TABLE_SIZE>> bimodal_table; // Bimodal table that the history table will be indexing 
-std::map<O3_CPU*, std::array<std::bitset<HISTORIES_TABLE_DEPTH>,BIMODAL_TABLE_SIZE>> history_table; // Table that stores the various histories 
+std::map<O3_CPU*, std::array<std::bitset<HISTORY_LENGTH>,BIMODAL_TABLE_SIZE>> history_table; // Table that stores the various histories 
 
 } // namespace
 
