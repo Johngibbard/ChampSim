@@ -63,6 +63,7 @@ public:
 
 struct cpu_stats {
   std::string name;
+  std::string branch_predictor;
   uint64_t begin_instrs = 0, begin_cycles = 0;
   uint64_t end_instrs = 0, end_cycles = 0;
   uint64_t total_rob_occupancy_at_branch_mispredict = 0;

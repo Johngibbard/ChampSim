@@ -28,7 +28,6 @@ class plain_printer
 {
   std::ostream& stream;
 
-  void print(O3_CPU::stats_type);
   void print(CACHE::stats_type);
   void print(DRAM_CHANNEL::stats_type);
 
@@ -41,6 +40,7 @@ class plain_printer
 
 public:
   plain_printer(std::ostream& str) : stream(str) {}
+  void print(O3_CPU::stats_type);
   void print(phase_stats& stats);
   void print(std::vector<phase_stats>& stats);
 };

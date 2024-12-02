@@ -20,7 +20,9 @@
 #include <chrono>
 #include <cmath>
 #include <numeric>
+#include <sstream>
 
+#include "stats_printer.h"
 #include "cache.h"
 #include "champsim.h"
 #include "deadlock.h"
@@ -29,6 +31,7 @@
 #include <fmt/chrono.h>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
+#include <fmt/ostream.h>
 
 std::chrono::seconds elapsed_time();
 
@@ -58,9 +61,17 @@ long O3_CPU::operate()
 
     auto phase_instr{std::ceil(num_retired - begin_phase_instr)};
     auto phase_cycle{std::ceil(current_cycle - begin_phase_cycle)};
+    constexpr std::array<std::pair<std::string_view, std::size_t>, 6> types{
+        {std::pair{"BRANCH_DIRECT_JUMP", BRANCH_DIRECT_JUMP}, std::pair{"BRANCH_INDIRECT", BRANCH_INDIRECT}, std::pair{"BRANCH_CONDITIONAL", BRANCH_CONDITIONAL},
+         std::pair{"BRANCH_DIRECT_CALL", BRANCH_DIRECT_CALL}, std::pair{"BRANCH_INDIRECT_CALL", BRANCH_INDIRECT_CALL},
+         std::pair{"BRANCH_RETURN", BRANCH_RETURN}}};
 
-    fmt::print("Heartbeat CPU {} instructions: {} cycles: {} heartbeat IPC: {:.4g} cumulative IPC: {:.4g} (Simulation time: {:%H hr %M min %S sec})\n", cpu,
-               num_retired, current_cycle, heartbeat_instr / heartbeat_cycle, phase_instr / phase_cycle, elapsed_time());
+    auto total_branch = std::ceil(std::accumulate(std::begin(types), std::end(types), 0ll, [tbt = sim_stats.total_branch_types](auto acc, auto next) { return acc + tbt[next.second]; }));
+    auto total_mispredictions = std::ceil(std::accumulate(std::begin(types), std::end(types), 0ll, [btm = sim_stats.branch_type_misses](auto acc, auto next) { return acc + btm[next.second]; }));
+
+
+    fmt::print("Heartbeat CPU {} instructions: {} cycles: {} heartbeat IPC: {:.4g} cumulative IPC: {:.4g} Prediction_Accuracy: {:.4g}% (Simulation time: {:%H hr %M min %S sec})\n", cpu,
+               num_retired, current_cycle, heartbeat_instr / heartbeat_cycle, phase_instr / phase_cycle,(100.0 * std::ceil(total_branch - total_mispredictions)) / total_branch, elapsed_time());
     next_print_instruction += STAT_PRINTING_PERIOD;
 
     last_heartbeat_instr = num_retired;

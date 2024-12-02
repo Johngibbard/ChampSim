@@ -64,6 +64,7 @@ def compile_champsim_instance(*args):
         with open(("branch/"+predictor+"/"+predictor+".cc"),'r+') as c_file:
             c_code = c_file.read()
            # print(c_code)
+           # becuase we can't change the variables in the C code we need to make scaling size for each branch predictor
             match predictor:
                 case 'gshare':
                     start = c_code.find("GS_HISTORY_TABLE_SIZE = ") + len("GS_HISTORY_TABLE_SIZE = ")
@@ -81,7 +82,6 @@ def compile_champsim_instance(*args):
                     end = c_code.find(";", start)
                     print("replacing table size with: " + str(pow(2,size)*256))
                     c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1) # multiply by the n * 2k * 4 = n*8096 = nkb
-
                 case "local_history":
                     start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
                     end = c_code.find(";", start)
@@ -122,10 +122,6 @@ def compile_champsim_instance(*args):
             config_file.truncate()
             config_file.close()
             file.close()
-        # becuase we can't change the variables in the C code we need to make scaling size for each branch predictor
-        # case doesn't exist in before python 3.10 so I have to do an ugly elif tree
-        # we are scaling size to be the number of kilobytes that we will use
-        # we are going give all of the predictors 4 counter bits for simplicity
     try:
         print ("config file: python/Test_configs/" + predictor + "_config.json")
         print("compiling...")

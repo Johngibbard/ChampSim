@@ -151,7 +151,7 @@ def create_csv(log):
 
 
 
-def display_size_graph(input,range):
+def display_size_graph(input,size):
     file_list = os.listdir(python_path + "Trace_tests")
     
     # get the types of predictors we will be running based on the names
@@ -179,7 +179,7 @@ def display_size_graph(input,range):
     # print(csvlist)
     count = 1
     x_axis = []
-    while (count <= range):
+    while (count <= size):
         x_axis.append(str(count))
         count = count*2
     
@@ -197,9 +197,9 @@ def display_size_graph(input,range):
         for p in predictors:
             if (p[0] == pl):
                 temp_pred_list.append(p[2])
-        #print(temp_pred_list)
-        #rint(x_axis)
-        plt.plot(x_axis,temp_pred_list, label= pl)
+       # plt.set_xscale('log', base=10)
+        plt.plot(range(size),temp_pred_list, label= pl)
+
 
     plt.legend()
     plt.ylabel("Prediction Accuracy")
